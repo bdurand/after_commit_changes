@@ -29,11 +29,21 @@ class TestModel < ActiveRecord::Base
 
   include AfterCommitChanges
 
-  attr_accessor :after_commit_changes, :before_commit_changes, :do_something
+  attr_accessor :after_commit_changes, :before_commit_changes, :conditional_callbacks
 
   after_commit { self.after_commit_changes = saved_changes }
   before_commit { self.before_commit_changes = saved_changes }
-  after_commit -> { self.do_something = true }, if: :saved_change_to_value?, on: :update
+
+  before_commit -> { conditional_callback(:before_commit) }, if: :saved_change_to_value?
+  after_commit -> { conditional_callback(:after_commit) }, if: :saved_change_to_value?
+  after_rollback -> { conditional_callback(:after_rollback) }, if: :saved_change_to_value?
+
+  private
+
+  def conditional_callback(callback)
+    self.conditional_callbacks ||= []
+    conditional_callbacks << callback
+  end
 end
 
 RSpec.configure do |config|
