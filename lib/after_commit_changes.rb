@@ -25,8 +25,10 @@ module AfterCommitChanges
     @after_commit_saved_changes[1, @after_commit_saved_changes.length].each do |changes|
       changes.each do |attr_name, value_change|
         attribute = attributes[attr_name]
-        attributes[attr_name] = ActiveModel::Attribute.from_user(attr_name, value_change.last, attribute.type, attribute)
-        mutations.force_change(attr_name)
+        last_value = value_change.last
+        last_value = last_value.to_h if last_value.is_a?(ActiveSupport::HashWithIndifferentAccess)
+        attributes[attr_name] = ActiveModel::Attribute.from_user(attr_name, last_value, attribute.type, attribute)
+        mutations.force_change(attr_name) unless mutations.changed?(attr_name)
       end
     end
 
