@@ -112,7 +112,7 @@ describe AfterCommitChanges do
       expect(record.value_previous_change).to eq(%w[bar biz])
     end
 
-    it "doesn't mess up the model attributes" do
+    it "should not mess up the model attributes" do
       record = TestModel.create!(name: "foo", value: "bar")
       record.reload
 
@@ -124,6 +124,20 @@ describe AfterCommitChanges do
 
       expect(record.name).to eq("bap")
       expect(record.value).to eq("biz")
+    end
+
+    it "should handle an attribute being set back to the original value" do
+      record = TestModel.create!(name: "foo", value: "bar")
+      record.reload
+
+      record.transaction do
+        record.update!(name: "baz")
+        record.update!(value: "biz")
+        record.update!(name: "foo")
+      end
+
+      expect(record.saved_change_to_name?).to eq(false)
+      expect(record.saved_changes).to eq("value" => %w[bar biz])
     end
   end
 end
