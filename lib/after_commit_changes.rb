@@ -10,7 +10,7 @@ module AfterCommitChanges
 
     base.after_save do
       @after_commit_saved_changes ||= []
-      @after_commit_saved_changes << saved_changes.transform_values(&:dup)
+      @after_commit_saved_changes << saved_changes
     end
   end
 
