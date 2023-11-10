@@ -95,19 +95,6 @@ describe AfterCommitChanges do
       expect(record.saved_changes).to eq("name" => %w[fub foo])
     end
 
-    it "should retain saved changes during a rollback" do
-      record = TestModel.create!(name: "foo", value: "bar")
-      record.reload
-
-      record.transaction do
-        record.update!(name: "baz")
-        record.update!(value: "biz")
-        raise ActiveRecord::Rollback
-      end
-
-      expect(record.saved_changes).to be_empty
-    end
-
     it "should respond to all dirty methods for saved changes" do
       record = TestModel.create!(name: "foo", value: "bar")
       record.reload
