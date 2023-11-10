@@ -2,23 +2,23 @@
 
 module AfterCommitChanges
   module Dirty
-    extend ActiveSupport::Concern
-
-    prepended do
-      before_commit do
-        if @after_commit_saved_changes.size > 1
-          @mutations_before_last_save = rollup_mutations_for_transaction
+    class << self
+      def prepended(base)
+        base.before_commit do
+          if @after_commit_saved_changes.size > 1
+            @mutations_before_last_save = rollup_mutations_for_transaction
+          end
+          @after_commit_saved_changes = []
+          @after_commit_changes_original_attributes = nil
         end
-        @after_commit_saved_changes = []
-        @after_commit_changes_original_attributes = nil
-      end
 
-      before_save do
-        @after_commit_changes_original_attributes ||= @attributes
-      end
+        base.before_save do
+          @after_commit_changes_original_attributes ||= @attributes
+        end
 
-      after_save do
-        @after_commit_saved_changes << saved_changes
+        base.after_save do
+          @after_commit_saved_changes << saved_changes
+        end
       end
     end
 
