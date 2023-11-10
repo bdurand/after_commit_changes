@@ -23,6 +23,7 @@ class TestModel < ActiveRecord::Base
     connection.create_table(table_name) do |t|
       t.string :name
       t.string :value
+      t.integer :version
     end
   end
 
