@@ -1,11 +1,13 @@
 # AfterCommitChanges
 
-![Continuous Integration](https://github.com/bdurand/after_commit_changes/workflows/Continuous%20Integration/badge.svg)
+[![Continuous Integration](https://github.com/bdurand/after_commit_changes/actions/workflows/continuous_integration.yml/badge.svg)](https://github.com/bdurand/after_commit_changes/actions/workflows/continuous_integration.yml)
+[![Regression Test](https://github.com/bdurand/after_commit_changes/actions/workflows/regression_test.yml/badge.svg)](https://github.com/bdurand/after_commit_changes/actions/workflows/regression_test.yml)
 [![Ruby Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://github.com/testdouble/standard)
+[![Gem Version](https://badge.fury.io/rb/after_commit_changes.svg)](https://badge.fury.io/rb/after_commit_changes)
 
-This gem addresses an issue in ActiveRecord with the values tracked as having changed when a record is updated multiple times in a single database transaction.
+This gem addresses an [issue in ActiveRecord](https://github.com/rails/rails/pull/50011) with the `saved_changes` value when a record is updated multiple times in a single database transaction.
 
-When a record is saved, you can check the `saved_changes` method to get the values that were changed in the last save operation using the [ActiveModel::Dirty API](https://api.rubyonrails.org/classes/ActiveModel/Dirty.html). However, when a record is saved multiple times, the list of saved changes is reset with each save operation. This can be an issue inside of an `after_commit` or `before_commit` callback since those callbacks are only called once for the transaction and will thus only get the last set of changes.
+After a record is saved, you can check the set of changes with the `saved_changes` method using the [ActiveModel::Dirty API](https://api.rubyonrails.org/classes/ActiveModel/Dirty.html). However, when a record is saved multiple times, the list of saved changes is reset with each save operation. This can be an issue inside of an `after_commit` or `before_commit` callback since those callbacks are only called once for the transaction and will only get the last set of changes.
 
 This can be a problem if you have a callback that checks for changes to specific fields. Consider this model where we want to run an asychronous job when a user changes their email address:
 
@@ -60,7 +62,6 @@ $ bundle
 Or install it yourself as:
 ```bash
 $ gem install gem "after_commit_changes"
-
 ```
 
 ## Contributing
