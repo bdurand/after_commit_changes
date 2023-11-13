@@ -1,12 +1,12 @@
 require "bundler/gem_tasks"
 
 task :ensure_release_branch do
-  unless `git rev-parse --abbrev-ref HEAD`.chomp == "main"
-    warn "Gem can only be released from the main branch"
+  release_branch = `git remote show origin | sed -n '/HEAD branch/s/.*: //p'`.chomp
+  unless `git rev-parse --abbrev-ref HEAD`.chomp == release_branch
+    warn "Gem can only be released from the #{release_branch} branch"
     exit 1
   end
 end
-
 Rake::Task["release:guard_clean"].enhance ["ensure_release_branch"]
 
 require "rspec/core/rake_task"
