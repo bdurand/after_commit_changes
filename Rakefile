@@ -7,7 +7,7 @@ task :ensure_release_branch do
   end
 end
 
-Rake::Task[:release].enhance [:ensure_release_branch]
+Rake::Task["release:guard_clean"].enhance ["ensure_release_branch"]
 
 require "rspec/core/rake_task"
 require "standard/rake"
