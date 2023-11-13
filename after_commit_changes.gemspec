@@ -1,6 +1,6 @@
 Gem::Specification.new do |spec|
   spec.name = "after_commit_changes"
-  spec.version = File.read(File.expand_path("../VERSION", __FILE__)).strip
+  spec.version = File.read(File.expand_path(__dir__, "VERSION")).strip
   spec.authors = ["Brian Durand"]
   spec.email = ["bbdurand@gmail.com"]
 
@@ -22,7 +22,7 @@ Gem::Specification.new do |spec|
     gemfiles/
     spec/
   ]
-  spec.files = Dir.chdir(File.expand_path("..", __FILE__)) do
+  spec.files = Dir.chdir(__dir__) do
     `git ls-files -z`.split("\x0").reject { |f| ignore_files.any? { |path| f.start_with?(path) } }
   end
 
