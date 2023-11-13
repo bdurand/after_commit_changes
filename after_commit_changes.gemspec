@@ -1,6 +1,6 @@
 Gem::Specification.new do |spec|
   spec.name = "after_commit_changes"
-  spec.version = File.read(File.expand_path(__dir__, "VERSION")).strip
+  spec.version = File.read(File.join(__dir__, "VERSION")).strip
   spec.authors = ["Brian Durand"]
   spec.email = ["bbdurand@gmail.com"]
 
