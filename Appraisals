@@ -1,7 +1,19 @@
-RAILS_MINOR_RELEASES = ["7.1", "7.0", "6.1", "6.0"].freeze
+appraise "activerecord_8.0" do
+  gem "activerecord", "~> 8.0.0"
+end
 
-RAILS_MINOR_RELEASES.each do |version|
-  appraise "activerecord-#{version}" do
-    gem "activerecord", "~> #{version}.0"
-  end
+appraise "activerecord_7.1" do
+  gem "activerecord", "~> 7.1.0"
+end
+
+appraise "activerecord_7.0" do
+  gem "activerecord", "~> 7.0.0"
+end
+
+appraise "activerecord_6.1" do
+  gem "activerecord", "~> 6.1.0"
+end
+
+appraise "activerecord_6.0" do
+  gem "activerecord", "~> 6.0.0"
 end
