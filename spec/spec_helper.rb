@@ -2,6 +2,8 @@
 
 ENV["BUNDLE_GEMFILE"] ||= File.expand_path("../Gemfile", __dir__)
 
+require "logger" # Needed for Rails < 7.1
+
 require "bundler/setup" if File.exist?(ENV["BUNDLE_GEMFILE"])
 
 begin
