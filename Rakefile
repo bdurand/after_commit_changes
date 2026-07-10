@@ -26,4 +26,17 @@ namespace :appraisals do
   task :install do
     exec "bundle exec appraisal install"
   end
+
+  desc "update all the appraisal lock files and strip the bundler version"
+  task :update do
+    sh "bundle exec appraisal update"
+    Dir.glob("gemfiles/*.gemfile.lock").each do |lockfile|
+      contents = File.read(lockfile)
+      stripped = contents.sub(/\nBUNDLED WITH\n\s+\S+\n/, "\n")
+      if stripped != contents
+        File.write(lockfile, stripped)
+        puts "stripped BUNDLED WITH from #{lockfile}"
+      end
+    end
+  end
 end
