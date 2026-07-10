@@ -36,8 +36,10 @@ jobs:
           - ruby: "2.6"
             appraisal: "activerecord_6.0"
     steps:
-      - uses: actions/checkout@v6
-      - uses: bdurand/github-actions/ruby-ci@main
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Ruby CI
+        uses: bdurand/github-actions/ruby-ci@v1.0.1
         with:
           ruby: ${{ matrix.ruby }}
           appraisal: ${{ matrix.appraisal }}
