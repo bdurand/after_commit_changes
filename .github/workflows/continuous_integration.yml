@@ -37,7 +37,7 @@ jobs:
             appraisal: "activerecord_6.0"
     steps:
       - name: Ruby CI
-        uses: bdurand/github-actions/ruby-ci@main
+        uses: bdurand/github-actions/ruby-ci@v1
         with:
           ruby: ${{ matrix.ruby }}
           appraisal: ${{ matrix.appraisal }}
