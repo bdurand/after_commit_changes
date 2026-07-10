@@ -43,11 +43,16 @@ jobs:
             appraisal: "activerecord_6.0"
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Set up Ruby ${{ matrix.ruby }}
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: "${{ matrix.ruby }}"
+      - name: Setup bundler
+        if: matrix.bundler != ''
+        run: |
+          gem uninstall bundler --all
+          gem install bundler --no-document --version ${{ matrix.bundler }}
       - name: Set Appraisal bundle
         if: matrix.appraisal != ''
         run: |
