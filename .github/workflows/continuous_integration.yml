@@ -17,7 +17,6 @@ env:
   BUNDLE_PATH: vendor/bundle
   BUNDLE_JOBS: 3
   BUNDLE_RETRY: 3
-  RUBYOPT: '--enable=frozen-string-literal --debug=frozen-string-literal'
 
 jobs:
   specs:
@@ -29,6 +28,7 @@ jobs:
         include:
           - ruby: "ruby"
             standardrb: true
+            yard: true
           - ruby: "3.4"
             appraisal: "activerecord_8"
           - ruby: "3.3"
@@ -56,14 +56,21 @@ jobs:
       - name: Set Appraisal bundle
         if: matrix.appraisal != ''
         run: |
-          echo "using gemfile gemfiles/${{ matrix.appraisal }}.gemfile"
-          bundle config set gemfile "gemfiles/${{ matrix.appraisal }}.gemfile"
+          gemfile="gemfiles/${{ matrix.appraisal }}.gemfile"
+          echo "using gemfile $gemfile"
+          sed -i '/^BUNDLED WITH$/,+1d' "$gemfile.lock"
+          echo "BUNDLE_GEMFILE=$gemfile" >> "$GITHUB_ENV"
       - name: Install bundler
         run: |
           bundle update
       - name: Run specs
         run: |
           bundle exec rake spec
+        env:
+          RUBYOPT: '--enable=frozen-string-literal --debug=frozen-string-literal'
       - name: Run standardrb
         if:   matrix.standardrb == true
         run:  bundle exec rake standard
+      - name: yard
+        if: matrix.yard == true
+        run:  bundle exec yard doc --fail-on-warning
