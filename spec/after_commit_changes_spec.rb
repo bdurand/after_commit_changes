@@ -59,6 +59,16 @@ describe AfterCommitChanges do
       expect(record.saved_changes).to eq("name" => %w[foo fub], "value" => %w[bar biz])
     end
 
+    it "aggregates changes from the first save even if later saves do not change the same attributes" do
+      record = TestModel.create!(name: "foo", value: "bar")
+      record.transaction do
+        record.update!(name: "baz")
+        record.update!(value: "biz")
+      end
+      expect(record.after_commit_changes).to eq("name" => %w[foo baz], "value" => %w[bar biz])
+      expect(record.saved_changes).to eq("name" => %w[foo baz], "value" => %w[bar biz])
+    end
+
     it "aggregates all changes in a transaction even if the last one is a no op" do
       record = TestModel.create!(name: "foo", value: "bar")
       record.transaction do

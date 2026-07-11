@@ -32,7 +32,7 @@ module AfterCommitChanges
     attributes = @_start_transaction_state[:attributes].deep_dup
     mutations = ActiveModel::AttributeMutationTracker.new(attributes)
 
-    saved_changes_list[1, saved_changes_list.length].each do |_depth, changes|
+    saved_changes_list.each do |_depth, changes|
       changes.each do |attr_name, value_change|
         attribute = attributes[attr_name]
         last_value = value_change.last
