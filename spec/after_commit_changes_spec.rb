@@ -59,6 +59,16 @@ describe AfterCommitChanges do
       expect(record.saved_changes).to eq("name" => %w[foo fub], "value" => %w[bar biz])
     end
 
+    it "aggregates changes from the first save even if later saves do not change the same attributes" do
+      record = TestModel.create!(name: "foo", value: "bar")
+      record.transaction do
+        record.update!(name: "baz")
+        record.update!(value: "biz")
+      end
+      expect(record.after_commit_changes).to eq("name" => %w[foo baz], "value" => %w[bar biz])
+      expect(record.saved_changes).to eq("name" => %w[foo baz], "value" => %w[bar biz])
+    end
+
     it "aggregates all changes in a transaction even if the last one is a no op" do
       record = TestModel.create!(name: "foo", value: "bar")
       record.transaction do
@@ -160,6 +170,61 @@ describe AfterCommitChanges do
 
       expect(record.saved_change_to_name?).to eq(true)
       expect(record.saved_changes).to eq("name" => %w[foo foo], "value" => %w[bar biz])
+    end
+  end
+
+  context "with rolled back transactions" do
+    it "does not report changes from a rolled back transaction on a later save" do
+      record = TestModel.create!(name: "foo", value: "bar")
+
+      record.transaction do
+        record.update!(name: "baz")
+        record.update!(value: "biz")
+        raise ActiveRecord::Rollback
+      end
+      record.reload
+
+      record.update!(name: "qux")
+      expect(record.saved_changes).to eq("name" => %w[foo qux])
+      expect(record.after_commit_changes).to eq("name" => %w[foo qux])
+    end
+
+    it "does not fire conditional commit callbacks for changes that were rolled back" do
+      record = TestModel.create!(name: "foo", value: "bar")
+
+      record.transaction do
+        record.update!(value: "biz")
+        raise ActiveRecord::Rollback
+      end
+      record.reload
+      record.conditional_callbacks = nil
+
+      record.update!(name: "qux")
+      expect(record.conditional_callbacks).to be_nil
+    end
+
+    it "excludes changes rolled back to a savepoint while keeping committed changes" do
+      record = TestModel.create!(name: "x", value: "y")
+
+      record.transaction do
+        record.update!(name: "x1")
+        record.transaction(requires_new: true) do
+          record.update!(value: "y1")
+          raise ActiveRecord::Rollback
+        end
+        record.update!(name: "x2")
+      end
+
+      expect(record.saved_changes).to eq("name" => %w[x x2])
+      expect(record.reload.value).to eq("y")
+    end
+
+    it "does not retain saved changes after a transaction with a single save" do
+      record = TestModel.create!(name: "foo", value: "bar")
+      expect(record.instance_variable_get(:@after_commit_saved_changes)).to be_nil
+
+      record.update!(name: "baz")
+      expect(record.instance_variable_get(:@after_commit_saved_changes)).to be_nil
     end
   end
 end
