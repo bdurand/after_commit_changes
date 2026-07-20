@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require_relative "spec_helper"
+require "spec_helper"
 
-describe AfterCommitChanges do
+RSpec.describe AfterCommitChanges do
   context "with no updates in a transaction" do
     it "does not have any saved changes" do
       record = TestModel.create!(name: "foo", value: "bar")
